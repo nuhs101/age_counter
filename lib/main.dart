@@ -39,12 +39,21 @@ class Counter with ChangeNotifier {
   int value = 0;
 
   void increment() {
-    value += 1;
-    notifyListeners();
+    if (value < 99) {
+      value += 1;
+      notifyListeners();
+    }
   }
 
   void decrement() {
-    value -= 1;
+    if (value > 0) {
+      value -= 1;
+      notifyListeners();
+    }
+  }
+
+  void setValue(int newValue) {
+    value = newValue;
     notifyListeners();
   }
 
@@ -60,6 +69,17 @@ class Counter with ChangeNotifier {
       return {'message': "You're an adult now!", 'color': Colors.orange};
     } else {
       return {'message': "Golden years!", 'color': Colors.grey};
+    }
+  }
+
+  // Define the color for the progression bar based on the counter value
+  Color getProgressBarColor() {
+    if (value >= 0 && value <= 33) {
+      return Colors.green;
+    } else if (value > 33 && value <= 67) {
+      return Colors.yellow;
+    } else {
+      return Colors.red;
     }
   }
 }
@@ -86,15 +106,15 @@ class MyHomePage extends StatelessWidget {
       appBar: AppBar(title: const Text('Flutter Demo Home Page')),
       body: Consumer<Counter>(
         builder: (context, counter, child) {
-          // Get the milestone message and color based on the counter value
           final milestone = counter.getAgeMilestone();
+          final progressColor = counter.getProgressBarColor();
           return Container(
             color: milestone['color'], // Set the background color
             child: Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const Text('You have pushed the button this many times:'),
+                  const Text('You are at the age of:'),
                   Text(
                     '${counter.value}',
                     style: Theme.of(context).textTheme.headlineMedium,
@@ -107,6 +127,24 @@ class MyHomePage extends StatelessWidget {
                       fontWeight: FontWeight.bold,
                       color: Colors.black,
                     ),
+                  ),
+                  const SizedBox(height: 30),
+                  // Slider to change age
+                  Slider(
+                    value: counter.value.toDouble(),
+                    min: 0,
+                    max: 99,
+                    divisions: 99,
+                    label: '${counter.value}',
+                    onChanged: (double newValue) {
+                      counter.setValue(newValue.toInt());
+                    },
+                  ),
+                  // Progress bar to show progression in the age range
+                  LinearProgressIndicator(
+                    value: counter.value / 99,
+                    color: progressColor,
+                    backgroundColor: Colors.grey[300],
                   ),
                 ],
               ),
