@@ -42,6 +42,21 @@ class Counter with ChangeNotifier {
     value += 1;
     notifyListeners();
   }
+
+  // Define the milestone categories and return appropriate message and color
+  Map<String, dynamic> getAgeMilestone() {
+    if (value >= 0 && value <= 12) {
+      return {'message': "You're a child!", 'color': Colors.lightBlue};
+    } else if (value >= 13 && value <= 19) {
+      return {'message': "Teenager time!", 'color': Colors.lightGreen};
+    } else if (value >= 20 && value <= 30) {
+      return {'message': "You're a young adult!", 'color': Colors.yellow};
+    } else if (value >= 31 && value <= 50) {
+      return {'message': "You're an adult now!", 'color': Colors.orange};
+    } else {
+      return {'message': "Golden years!", 'color': Colors.grey};
+    }
+  }
 }
 
 class MyApp extends StatelessWidget {
@@ -64,20 +79,35 @@ class MyHomePage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text('Flutter Demo Home Page')),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const Text('You have pushed the button this many times:'),
-            Consumer<Counter>(
-              builder:
-                  (context, counter, child) => Text(
+      body: Consumer<Counter>(
+        builder: (context, counter, child) {
+          // Get the milestone message and color based on the counter value
+          final milestone = counter.getAgeMilestone();
+          return Container(
+            color: milestone['color'], // Set the background color
+            child: Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Text('You have pushed the button this many times:'),
+                  Text(
                     '${counter.value}',
                     style: Theme.of(context).textTheme.headlineMedium,
                   ),
+                  const SizedBox(height: 20),
+                  Text(
+                    milestone['message']!,
+                    style: TextStyle(
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black,
+                    ),
+                  ),
+                ],
+              ),
             ),
-          ],
-        ),
+          );
+        },
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
