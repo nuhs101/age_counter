@@ -43,6 +43,11 @@ class Counter with ChangeNotifier {
     notifyListeners();
   }
 
+  void decrement() {
+    value -= 1;
+    notifyListeners();
+  }
+
   // Define the milestone categories and return appropriate message and color
   Map<String, dynamic> getAgeMilestone() {
     if (value >= 0 && value <= 12) {
@@ -109,13 +114,29 @@ class MyHomePage extends StatelessWidget {
           );
         },
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          var counter = context.read<Counter>();
-          counter.increment();
-        },
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
+      floatingActionButton: Row(
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: [
+          // Decrement button
+          FloatingActionButton(
+            onPressed: () {
+              var counter = context.read<Counter>();
+              counter.decrement();
+            },
+            tooltip: 'Decrement',
+            child: const Icon(Icons.remove),
+          ),
+          const SizedBox(width: 10),
+          // Increment button
+          FloatingActionButton(
+            onPressed: () {
+              var counter = context.read<Counter>();
+              counter.increment();
+            },
+            tooltip: 'Increment',
+            child: const Icon(Icons.add),
+          ),
+        ],
       ),
     );
   }
